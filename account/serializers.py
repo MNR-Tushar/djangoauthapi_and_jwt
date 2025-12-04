@@ -3,6 +3,13 @@ from django.contrib.auth import authenticate
 from .models import User
 from rest_framework_simplejwt.tokens import RefreshToken
 
+class CustomUserSerializer(serializers.ModelSerializer):
+    
+
+    class Meta:
+        model = User
+        fields = ("id", "name", "email")
+
 
 class UserRegisterSerializer(serializers.ModelSerializer):
     password2 = serializers.CharField(write_only=True, style={'input_type': 'password'}, label='Confirm Password')
@@ -41,25 +48,13 @@ class UserRegisterSerializer(serializers.ModelSerializer):
 
 class UserLoginSerializer(serializers.Serializer):
     email = serializers.EmailField()
-    password = serializers.CharField(write_only=True, style={'input_type': 'password'})
+    password = serializers.CharField(write_only=True)
 
-    def validate(self, attrs):
-        email = attrs.get('email')
-        password = attrs.get('password')
-
-        if email and password:
-            user = authenticate(email=email, password=password)
-            
-            if not user:
-                raise serializers.ValidationError('Invalid email or password')
-            
-            if not user.is_active:
-                raise serializers.ValidationError('User account is disabled')
-            
-            attrs['user'] = user
-            return attrs
-        else:
-            raise serializers.ValidationError('Must include "email" and "password"')
+    def validate(self, data):
+        user = authenticate(**data)
+        if user and user.is_active:
+            return user
+        raise serializers.ValidationError("Incorrect Credentials")
 
 
 class UserProfileSerializer(serializers.ModelSerializer):
