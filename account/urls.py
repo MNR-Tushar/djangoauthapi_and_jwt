@@ -9,4 +9,5 @@ urlpatterns = [
     path("login/", UserLoginAPIView.as_view(), name="login-user"),
     path("profile/", UserProfileAPIView.as_view(), name="user-profile"),
     path("token/refresh/", TokenRefreshView.as_view(), name="token-refresh"),
+    path("change-password/", UserChangePasswordAPIView.as_view(), name="change-password"),
 ]

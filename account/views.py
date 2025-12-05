@@ -48,3 +48,13 @@ class UserLoginAPIView(GenericAPIView):
         data = serializer.data
         data["tokens"] = {"refresh": str(token), "access": str(token.access_token)}
         return Response(data, status=status.HTTP_200_OK)
+    
+class UserChangePasswordAPIView(GenericAPIView):
+    serializer_class = UserChangePasswordSerializer
+    permission_classes = [IsAuthenticated]
+
+    def post(self,request):
+        serializer =self.get_serializer(data=request.data, context={'user': request.user})
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response({"message": "Password changed successfully"}, status=status.HTTP_200_OK)
