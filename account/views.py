@@ -1,10 +1,10 @@
 
 from rest_framework import status
 from rest_framework.response import Response
-from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, IsAdminUser, AllowAny
 from .serializers import *
 from rest_framework.generics import GenericAPIView
-
+from rest_framework import viewsets
 
 class UserRegisterAPIView(GenericAPIView):
     serializer_class = UserRegisterSerializer
@@ -58,3 +58,9 @@ class UserChangePasswordAPIView(GenericAPIView):
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response({"message": "Password changed successfully"}, status=status.HTTP_200_OK)
+    
+
+class CustomUserView(viewsets.ModelViewSet):
+    queryset = User.objects.all()
+    permission_classes = [IsAdminUser]
+    serializer_class = CustomUserSerializer 
