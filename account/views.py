@@ -63,4 +63,54 @@ class UserChangePasswordAPIView(GenericAPIView):
 class CustomUserView(viewsets.ModelViewSet):
     queryset = User.objects.all()
     permission_classes = [IsAdminUser]
-    serializer_class = CustomUserSerializer 
+    serializer_class = CustomUserSerializer
+
+class UserChangePasswordAPIView(GenericAPIView):
+    serializer_class = UserChangePasswordSerializer
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        serializer = self.get_serializer(data=request.data, context={'user': request.user})
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response({'message': 'Password changed successfully'}, status=status.HTTP_200_OK)
+
+
+class SendPasswordResetEmailAPIView(GenericAPIView):
+    serializer_class = SendPasswordResetEmailSerializer
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        return Response({'message': 'Password reset link sent to your email'}, status=status.HTTP_200_OK)
+
+
+class UserPasswordResetAPIView(GenericAPIView):
+    serializer_class = UserPasswordResetSerializer
+    permission_classes = [AllowAny]
+
+    def post(self, request, uid, token):
+        serializer = self.get_serializer(data=request.data, context={'uid': uid, 'token': token})
+        serializer.is_valid(raise_exception=True)
+        return Response({'message': 'Password reset successfully'}, status=status.HTTP_200_OK)
+
+
+class SendEmailVerificationAPIView(GenericAPIView):
+    serializer_class = SendEmailVerificationSerializer
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        return Response({'message': 'Verification link sent to your email'}, status=status.HTTP_200_OK)
+
+
+class VerifyEmailAPIView(GenericAPIView):
+    serializer_class = VerifyEmailSerializer
+    permission_classes = [AllowAny]
+
+    def get(self, request, uid, token):
+        serializer = self.get_serializer(data={}, context={'uid': uid, 'token': token})
+        serializer.is_valid(raise_exception=True)
+        return Response({'message': 'Email verified successfully'}, status=status.HTTP_200_OK) 

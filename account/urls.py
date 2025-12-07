@@ -13,5 +13,9 @@ urlpatterns = [
     path("profile/", UserProfileAPIView.as_view(), name="user-profile"),
     path("token/refresh/", TokenRefreshView.as_view(), name="token-refresh"),
     path("change-password/", UserChangePasswordAPIView.as_view(), name="change-password"),
+    path("send-reset-password-email/", SendPasswordResetEmailAPIView.as_view(), name="send-reset-password-email"),
+    path("reset-password/<uid>/<token>/", UserPasswordResetAPIView.as_view(), name="reset-password"),
+    path("send-verification-email/", SendEmailVerificationAPIView.as_view(), name="send-verification-email"),
+    path("verify-email/<uid>/<token>/", VerifyEmailAPIView.as_view(), name="verify-email"),
     path("", include(router.urls)),
 ]
